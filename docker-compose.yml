@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+  
+  wordpress:
+    image: wordpress
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/var/www/html
+    links:
+      - mysql:mysql
+    ports:
+      - 8000:80
+    restart: always
+    environment:
+      WPRDPRESS_DB_PASSWORD: wordpress
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: wordpress 
